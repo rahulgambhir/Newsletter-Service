@@ -27,10 +27,16 @@ To run this project, you will need to add the following environment variables to
 
 ## API Reference
 
-#### Get content & user from DB & send specific emails to specific users
+#### To add new user
 
 ```http
-  GET /send
+  POST /add/user
+```
+
+#### To add new content
+
+```http
+  POST /add/content
 ```
 
 
@@ -40,6 +46,5 @@ To run this project, you will need to add the following environment variables to
 
 
 ## Improvements
-- Code refactoring & optimization is yet to be done. (Due to some time constraints, was not able to give enough time to this project.)
-- Currently, I'm fetching the content only on the basis of date. I need to work on the logic to fetch it on the basis of specific time.
-- Service to automatically send content to the subscriber of that topic at the specific time of that content is yet to be worked upon.
+- Date and time for content can be handled in a better way.
+- To handle - Addition of new topics in a better way.
