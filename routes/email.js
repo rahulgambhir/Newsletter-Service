@@ -1,8 +1,12 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
+const cron = require("node-cron");
 
-const { email } = require('../controllers/emailController');
+const { email } = require("../controllers/emailController");
 
-router.route("/send").get(email);
+// Will call the email() every hour
+cron.schedule("* * * *", () => {
+  email();
+});
 
 module.exports = router;

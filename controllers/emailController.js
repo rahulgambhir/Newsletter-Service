@@ -1,75 +1,41 @@
 const mailHelper = require("../utils/emailHelper");
 const User = require("../models/user");
 const Content = require("../models/content");
-const { endOfDay, startOfDay } = require("date-fns");
+
+const topics = ["tech", "motivation", "health"];
 
 exports.email = async (req, res) => {
-  const givenDate = new Date();
+  let givenDate = new Date();
+  givenDate = givenDate.toISOString().slice(0, 19);
 
-  const techContent = await Content.findOne({
-    topic: "tech",
-    time: { $gte: startOfDay(givenDate), $lt: endOfDay(givenDate) },
-    isSent: false,
-  });
+  for (let i = 0; i < topics.length; i++) {
+    const contentTopic = topics[i];
 
-  const techUsers = await User.find(
-    {
-      topic: "tech",
-    },
-    "email"
-  );
+    const content = await Content.findOne({
+      topic: contentTopic,
+      time: new Date(givenDate + "Z"),
+      isSent: false,
+    });
 
-  const techUsersArray = [];
+    const UsersArray = [];
+    
+    if (content) {
+      const Users = await User.find(
+        {
+          topic: contentTopic,
+        },
+        "email"
+      );
 
-  for(let i=0; i<techUsers.length; i++){
-    techUsersArray.push(techUsers[i].email);
+      for (let i = 0; i < Users.length; i++) {
+        UsersArray.push(Users[i].email);
+      }
+    }
+
+    if (content && UsersArray.length > 0) {
+      sendEmail(UsersArray, content);
+    }
   }
-
-  sendEmail(techUsersArray, techContent)
-
-  const healthContent = await Content.findOne({
-    topic: "health",
-    time: { $gte: startOfDay(givenDate), $lt: endOfDay(givenDate) },
-    isSent: false,
-  });
-
-  const healthUsers = await User.find(
-    {
-      topic: "health",
-    },
-    "email"
-  );
-
-  const healthUsersArray = [];
-
-  for(let i=0; i<healthUsers.length; i++){
-    healthUsersArray.push(healthUsers[i].email);
-  }
-
-  sendEmail(healthUsersArray, healthContent)
-
-  const motivationContent = await Content.findOne({
-    topic: "motivation",
-    time: { $gte: startOfDay(givenDate), $lt: endOfDay(givenDate) },
-    isSent: false,
-  });
-
-  const motivationUsers = await User.find(
-    {
-      topic: "motivation",
-    },
-    "email"
-  );
-
-  const motivationUsersArray = [];
-
-  for(let i=0; i<motivationUsers.length; i++){
-    motivationUsersArray.push(motivationUsers[i].email);
-  }
-
-  sendEmail(motivationUsersArray, motivationContent)
-
-  res.json("Sent the emails successfully!");
 };
 
 async function sendEmail(users, content) {
