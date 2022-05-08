@@ -1,8 +1,8 @@
 const mailHelper = require("../utils/emailHelper");
 const User = require("../models/user");
 const Content = require("../models/content");
-
-const topics = ["tech", "motivation", "health"];
+const topicController = require("./topicController");
+const topics = topicController.topics;
 
 exports.email = async (req, res) => {
   let givenDate = new Date();
